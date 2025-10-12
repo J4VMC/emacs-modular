@@ -30,7 +30,7 @@
 
   ;; Configure built-in project.el to recognize .project files as project boundaries
   ;; This handles monorepo subprojects where you want to limit scope within a larger Git repo
-  (setq project-vc-extra-root-markers '(".project"))
+  (setq project-vc-extra-root-markers '(".project" "pyproject.toml" ".projectile"))
 
   ;; Custom function to detect Git submodules specifically
   ;; Submodules have .git files (not directories), so they need special handling
@@ -39,7 +39,7 @@
     "Detect Git submodules by checking for .git files (not directories).
 
    This function:
-   - Only triggers for actual Git submodules (where .git is a file, not directory)  
+   - Only triggers for actual Git submodules (where .git is a file, not directory)
    - Returns 'vc project type to respect .gitignore files
    - Prevents submodules from being detected as part of their parent repository
 
@@ -60,7 +60,7 @@
   ;; SUMMARY: How this works
   ;; =============================================================================
   ;; 1. my/project-try-submodule runs first, catches Git submodules (.git files)
-  ;; 2. project-try-vc runs second, handles normal repos + .project file markers  
+  ;; 2. project-try-vc runs second, handles normal repos + .project file markers
   ;; 3. Both return 'vc projects that respect .gitignore files
   ;; 4. Result: Fast, correct project boundaries for both submodules and monorepos
   ;;
