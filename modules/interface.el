@@ -138,13 +138,11 @@
   (dashboard-set-footer nil)
   :config
   :config
+  :config
   (dashboard-setup-startup-hook)
-  ;; Only show dashboard when starting Emacs without arguments
-  (setq initial-buffer-choice
-	(lambda ()
-          (if (> (length command-line-args) 1)
-              nil  ; Don't show dashboard if files were specified
-            (dashboard-open))))
+  ;; Only set initial-buffer-choice when starting without arguments
+  (unless (> (length command-line-args) 1)
+    (setq initial-buffer-choice #'dashboard-open))
   (add-hook 'dashboard-after-initialize-hook
             (lambda ()
               (when (get-buffer "*scratch*")
