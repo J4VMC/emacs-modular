@@ -70,7 +70,7 @@
   (setq vterm-toggle-cd-auto-create-buffer nil)
   (setq vterm-toggle-reset-window-configration-after-exit t)
   (setq vterm-toggle-fullscreen-p nil)
-  (setq vterm-toggle-hide-method 'bury-all-vterm-buffer)
+  (setq vterm-toggle-hide-method 'reset-window)
   (add-to-list
    'display-buffer-alist
    '((lambda (buffer-or-name _)
