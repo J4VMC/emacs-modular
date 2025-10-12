@@ -186,7 +186,7 @@ brew install composer
 
 # Install PHP development tools
 npm install -g intelephense  # Language server
-composer global require squizlabs/php_codesniffer     # Code style checker
+composer global require squizlabs/php_code-sniffer     # Code style checker
 composer global require "dealerdirect/phpcodesniffer-composer-installer"
 phpcs --config-set --default_standard PSR12
 composer global require phpstan/phpstan               # Static analyzer
