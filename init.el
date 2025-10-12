@@ -87,11 +87,12 @@
   (diminish 'eldoc-mode))
 
 ;; Install and load the Gruvbox theme.
-(use-package gruvbox-theme
+(use-package catppuccin-theme
   :ensure t
   :init
   ;; Load the theme in :init to prevent a "flash" of the default theme on startup.
-  (load-theme 'gruvbox-dark-hard t))
+  ;; The Catppuccin Mocha (dark theme) is the default.
+  (load-theme 'catppuccin t))
 
 ;; Customize file for custom settings
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
