@@ -1,4 +1,3 @@
-
 # Emacs 30 Configuration for macOS
 
 A modern, IDE-like Emacs configuration for software development. This setup provides features similar to VS Code but runs entirely in Emacs.
@@ -32,24 +31,29 @@ brew install emacs-plus --HEAD --with-debug --with-xwidgets --with-dbus --with-m
 ```
 
 Verify the installation:
+
 ```bash
 emacs --version
 ```
+
 You should see "GNU Emacs 30.2" or similar.
 
 ### Step 2: Install This Configuration
 
 If you have an existing Emacs config, back it up first:
+
 ```bash
 mv ~/.emacs.d ~/.emacs.d.backup
 ```
 
 Clone and set up this configuration with the Gruvbox Dark Hard theme:
+
 ```bash
 git clone git@github.com:J4VMC/emacs-modular.git ~/.emacs.d
 ```
 
 Or if you want to clone it with the Catppuccin Mocha theme:
+
 ```bash
 git clone -b catppuccin git@github.com:J4VMC/emacs-modular.git ~/.emacs.d
 ```
@@ -101,6 +105,7 @@ pipx install poetry
 ```
 
 **Test it works:**
+
 ```bash
 which ruff  # Should show a path
 ```
@@ -120,12 +125,12 @@ npm install -g typescript                    # TypeScript compiler
 npm install -g typescript-language-server    # Language server
 npm install -g prettier                      # Code formatter
 npm install -g eslint                        # Linter
-
-# Optional: For Tailwind CSS support
-npm install -g @tailwindcss/language-server
+npm install -g vscode-eslint-language-server # ESLint Language server
+npm install -g @tailwindcss/language-server  # For Tailwind CSS support
 ```
 
 **Test it works:**
+
 ```bash
 which typescript-language-server  # Should show a path
 ```
@@ -134,7 +139,7 @@ which typescript-language-server  # Should show a path
 
 #### Go
 
-```bash
+````bash
 # Install Go
 brew install go
 
@@ -149,7 +154,7 @@ fish_add_path (go env GOPATH)/bin
 **Test it works:**
 ```bash
 ls (go env GOPATH)/bin/gopls # Should show a path like /Users/you/go/bin/gopls
-```
+````
 
 ---
 
@@ -169,6 +174,7 @@ rustup component add clippy          # Linter
 ```
 
 **Test it works:**
+
 ```bash
 which rust-analyzer  # Should show a path in ~/.cargo/bin
 ```
@@ -194,12 +200,14 @@ composer global require phpstan/phpstan               # Static analyzer
 # PHP unit testing
 composer global require phpunit/phpunit
 ```
+
 ```bash
 # Add Composer to Path
 fish_add_path (composer global config bin-dir --absolute)
 ```
 
 **Test it works:**
+
 ```bash
 which phpcs  # Should show a path
 ```
@@ -220,6 +228,7 @@ brew install swift-format   # Formatter
 ```
 
 **Test it works:**
+
 ```bash
 which swift  # Should show /usr/bin/swift
 ```
@@ -245,6 +254,7 @@ cs install metals
 ```
 
 **Test it works:**
+
 ```bash
 which metals  # Should show a path
 ```
@@ -272,6 +282,7 @@ brew install postgresql@18
 ```
 
 **Test it works:**
+
 ```bash
 which sqlint  # Should show a path
 ```
@@ -291,6 +302,7 @@ brew install hadolint
 ```
 
 **Test it works:**
+
 ```bash
 which docker    # Should show a path
 which hadolint  # Should show a path
@@ -306,6 +318,7 @@ brew install pandoc
 ```
 
 **Test it works:**
+
 ```bash
 which pandoc  # Should show a path
 ```
@@ -320,7 +333,6 @@ brew install libxml2
 ```
 
 ---
-
 
 ### Step 5: Install Combobulate
 
@@ -337,11 +349,13 @@ emacs
 ```
 
 **What happens on first launch:**
+
 1. Emacs will automatically download and install packages (takes 2-5 minutes)
 2. You'll see a dashboard with recent files and projects
 3. The first time you open a code file, Emacs will ask to install tree-sitter grammars
 
 **Installing tree-sitter grammars:**
+
 - When you open a `.py`, `.js`, `.go`, or other supported file for the first time
 - Emacs might prompt: "Install tree-sitter grammar for python?"
 - Press `y` to install it
@@ -355,21 +369,25 @@ Let's test with a Python file:
 1. Press `C-x C-f` (hold Control, press x, release, then hold Control and press f)
 2. Type `~/test.py` and press Enter
 3. Type this code:
+
    ```python
    def hello(name):
        return f"Hello, {name}"
-   
+
    print(hello("World"))
    ```
+
 4. Save with `C-x C-s`
 
 **You should see:**
+
 - ✅ Line numbers on the left
 - ✅ Syntax highlighting in color
 - ✅ Auto-completion popup when you type
 - ✅ Code auto-formats when you save
 
 **If something doesn't work:**
+
 - Check that the language server is installed: `which pyright`
 - Open Emacs and press `M-x lsp-doctor` (hold Option/Alt, press x, type "lsp-doctor")
 - This will show you what's missing
@@ -377,6 +395,7 @@ Let's test with a Python file:
 ## Understanding Emacs Key Notation
 
 Emacs uses special notation for keyboard shortcuts:
+
 - `C-x` = Hold Control and press x
 - `M-x` = Hold Option/Alt (⌥) and press x
 - `C-c t` = Hold Control and press c, then release and press t
@@ -385,38 +404,43 @@ Emacs uses special notation for keyboard shortcuts:
 ## Essential Keyboard Shortcuts
 
 ### Files and Buffers
-| Shortcut | Action |
-|----------|--------|
-| `C-x C-f` | Open a file |
-| `C-x C-s` | Save current file |
-| `C-x k` | Close current file |
-| `C-x b` | Switch between open files |
-| `C-x C-c` | Quit Emacs |
+
+| Shortcut  | Action                    |
+| --------- | ------------------------- |
+| `C-x C-f` | Open a file               |
+| `C-x C-s` | Save current file         |
+| `C-x k`   | Close current file        |
+| `C-x b`   | Switch between open files |
+| `C-x C-c` | Quit Emacs                |
 
 ### Navigation
-| Shortcut | Action |
-|----------|--------|
-| `C-s` | Search forward |
-| `C-r` | Search backward |
-| `M-g g` | Go to line number |
-| `C-c j` | Jump to any line (visual) |
-| `s-j` | Jump to any character (visual) |
+
+| Shortcut | Action                         |
+| -------- | ------------------------------ |
+| `C-s`    | Search forward                 |
+| `C-r`    | Search backward                |
+| `M-g g`  | Go to line number              |
+| `C-c j`  | Jump to any line (visual)      |
+| `s-j`    | Jump to any character (visual) |
 
 ### Project Management
-| Shortcut | Action |
-|----------|--------|
+
+| Shortcut  | Action                       |
+| --------- | ---------------------------- |
 | `C-c p f` | Find file in project (fuzzy) |
-| `C-c p p` | Switch between projects |
-| `C-x t t` | Toggle file tree sidebar |
-| `M-0` | Focus on file tree |
+| `C-c p p` | Switch between projects      |
+| `C-x t t` | Toggle file tree sidebar     |
+| `M-0`     | Focus on file tree           |
 | `C-c t a` | Show current project in tree |
 
 ### Git (Magit)
-| Shortcut | Action |
-|----------|--------|
-| `C-x g` | Open Git status |
+
+| Shortcut | Action          |
+| -------- | --------------- |
+| `C-x g`  | Open Git status |
 
 **In Magit status buffer:**
+
 - `s` = Stage file or hunk
 - `u` = Unstage file or hunk
 - `c c` = Commit (type message, then `C-c C-c` to confirm)
@@ -425,35 +449,39 @@ Emacs uses special notation for keyboard shortcuts:
 - `q` = Quit Magit
 
 ### Terminal
-| Shortcut | Action |
-|----------|--------|
-| `C-c t` | Toggle terminal at bottom |
+
+| Shortcut  | Action                        |
+| --------- | ----------------------------- |
+| `C-c t`   | Toggle terminal at bottom     |
 | `C-c p v` | Open terminal in project root |
 
 ### Code Navigation (when in a code file)
-| Shortcut | Action |
-|----------|--------|
-| `M-.` | Go to definition |
-| `M-,` | Go back |
+
+| Shortcut  | Action             |
+| --------- | ------------------ |
+| `M-.`     | Go to definition   |
+| `M-,`     | Go back            |
 | `C-c C-d` | Show documentation |
-| `M-n` | Next error |
-| `M-p` | Previous error |
-| `C-c l` | LSP command prefix |
+| `M-n`     | Next error         |
+| `M-p`     | Previous error     |
+| `C-c l`   | LSP command prefix |
 
 ### Editing
-| Shortcut | Action |
-|----------|--------|
-| `C-space` | Start selection |
-| `C-w` | Cut selection |
-| `M-w` | Copy selection |
-| `C-y` | Paste |
-| `M-;` | Comment/uncomment |
-| `C-/` | Undo |
+
+| Shortcut  | Action            |
+| --------- | ----------------- |
+| `C-space` | Start selection   |
+| `C-w`     | Cut selection     |
+| `M-w`     | Copy selection    |
+| `C-y`     | Paste             |
+| `M-;`     | Comment/uncomment |
+| `C-/`     | Undo              |
 
 ### Getting Help
-| Shortcut | Action |
-|----------|--------|
-| `C-h t` | Start interactive tutorial |
-| `C-h k` | Describe key (press this, then press another key) |
-| `C-h m` | Show all shortcuts for current mode |
-| `C-h f` | Describe function |
+
+| Shortcut | Action                                            |
+| -------- | ------------------------------------------------- |
+| `C-h t`  | Start interactive tutorial                        |
+| `C-h k`  | Describe key (press this, then press another key) |
+| `C-h m`  | Show all shortcuts for current mode               |
+| `C-h f`  | Describe function                                 |
