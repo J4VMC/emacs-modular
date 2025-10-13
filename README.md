@@ -125,7 +125,7 @@ npm install -g typescript                    # TypeScript compiler
 npm install -g typescript-language-server    # Language server
 npm install -g prettier                      # Code formatter
 npm install -g eslint                        # Linter
-npm install -g vscode-eslint-language-server # ESLint Language server
+npm install -g vscode-langservers-extracted # ESLint Language server
 npm install -g @tailwindcss/language-server  # For Tailwind CSS support
 ```
 
