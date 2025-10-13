@@ -85,7 +85,6 @@
   :after (lsp-mode treemacs))
 
 (use-package lsp-eslint
-  :ensure t
   :demand t
   :after lsp-mode
   :custom
