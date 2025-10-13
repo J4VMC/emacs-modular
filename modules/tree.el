@@ -59,6 +59,9 @@
     (add-to-list 'major-mode-remap-alist mapping))
   :config
   (setup-install-grammars)
+
+  (setq treesit-font-lock-level 4)  ;; Maximum highlighting level
+  
   ;; Do not forget to customize Combobulate to your liking:
   ;;
   ;;  M-x customize-group RET combobulate RET

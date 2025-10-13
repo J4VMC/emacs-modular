@@ -84,10 +84,21 @@
   :ensure t
   :after (lsp-mode treemacs))
 
-
 (use-package lsp-eslint
+  :ensure t
   :demand t
-  :after lsp-mode)
+  :after lsp-mode
+  :custom
+  (lsp-eslint-auto-fix-on-save nil)
+  (lsp-eslint-enable t)
+  (lsp-eslint-package-manager "npm")
+  ;; Point to the actual ESLint language server location
+  (lsp-eslint-server-command '("vscode-eslint-language-server" "--stdio"))
+  :config
+  ;; Explicitly register ESLint for these modes
+  (add-to-list 'lsp-language-id-configuration '(typescript-ts-mode . "typescript"))
+  (add-to-list 'lsp-language-id-configuration '(tsx-ts-mode . "typescriptreact"))
+  (add-to-list 'lsp-language-id-configuration '(js-ts-mode . "javascript")))
 
 (use-package lsp-tailwindcss
   :ensure t
