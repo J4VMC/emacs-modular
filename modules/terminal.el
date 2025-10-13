@@ -16,7 +16,7 @@
   (setq vterm-tramp-shells
 	'("/usr/bin/bash" "/bin/bash" "/bin/zsh" "docker" "/bin/sh"))
   :bind (:map vterm-mode-map
-	      ("s-p" . vterm-yank))
+	      ("C-y" . vterm-yank))
   :config
   (setq vterm-shell (executable-find "fish"))
   (setq vterm-eval-cmds '(("find-file" find-file)

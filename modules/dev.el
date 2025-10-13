@@ -26,12 +26,56 @@
   :ensure t
   :diminish ""
   :config
+  ;; --- Custom Formatters ---
+  ;; PHP - PSR12 standard
   (setf (alist-get 'phpcs-psr12 apheleia-formatters)
         '("phpcbf" "--standard=PSR12" "--stdin-path=" (or buffer-file-name "stdin")))
+
+  ;; Python - Ruff
+  (setf (alist-get 'ruff apheleia-formatters)
+	'("ruff" "format" "--stdin-filename" filepath "-"))
+
+
+  ;; --- Mode Associations ---
+  ;; PHP
   (setf (alist-get 'php-ts-mode apheleia-mode-alist) 'phpcs-psr12)
-  (setf (alist-get 'python-mode apheleia-mode-alist) 'ruff-isort)
-  (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff-isort)
+  
+  ;; Python
+  (setf (alist-get 'python-mode apheleia-mode-alist) 'ruff)
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
+  
+  ;; JavaScript / TypeScript
+  (setf (alist-get 'typescript-ts-mode apheleia-mode-alist) 'prettier-typescript)
+  (setf (alist-get 'tsx-ts-mode apheleia-mode-alist) 'prettier-typescript)
+  (setf (alist-get 'js-ts-mode apheleia-mode-alist) 'prettier-javascript)
+  (setf (alist-get 'typescript-mode apheleia-mode-alist) 'prettier-typescript)
+  (setf (alist-get 'js-mode apheleia-mode-alist) 'prettier-javascript)
+  (setf (alist-get 'js2-mode apheleia-mode-alist) 'prettier-javascript)
+  
+  ;; JSON
+  (setf (alist-get 'json-mode apheleia-mode-alist) 'prettier-json)
+  (setf (alist-get 'json-ts-mode apheleia-mode-alist) 'prettier-json)
+  
+  ;; CSS
+  (setf (alist-get 'css-mode apheleia-mode-alist) 'prettier-css)
+  (setf (alist-get 'css-ts-mode apheleia-mode-alist) 'prettier-css)
+  
+  ;; HTML
+  (setf (alist-get 'html-mode apheleia-mode-alist) 'prettier-html)
+  (setf (alist-get 'web-mode apheleia-mode-alist) 'prettier-html)
+  
+  ;; YAML
+  (setf (alist-get 'yaml-mode apheleia-mode-alist) 'prettier-yaml)
+  (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'prettier-yaml)
+  
+  ;; Markdown
+  (setf (alist-get 'markdown-mode apheleia-mode-alist) 'prettier-markdown)
+  (setf (alist-get 'gfm-mode apheleia-mode-alist) 'prettier-markdown)
+  
+  ;; --- Enable globally ---
   (apheleia-global-mode t))
+
+
 
 ;; Flycheck
 (use-package flycheck
@@ -41,9 +85,22 @@
               ("M-n" . flycheck-next-error)
               ("M-p" . flycheck-previous-error))
   :config
+  (flycheck-define-checker typescript-tsc-syntax
+    "A TypeScript syntax checker using tsc."
+    :command ("tsc"
+              "--noEmit"
+              "--pretty" "false"
+              source-inplace)
+    :error-patterns
+    ((error line-start (file-name) "(" line "," column "): error TS"
+            (message) line-end))
+    :modes (typescript-ts-mode tsx-ts-mode))
+  
   (flycheck-define-checker python-ruff
     "A Python syntax and style checker using Ruff."
-    :command ("ruff" "check" 
+    :command ("ruff" "check"
+              ;; Add the rule sets you want to enable globally
+              "--select" "E,F,W,I,D,UP,B,SIM,S"
               "--output-format" "concise"
               "--stdin-filename" source-inplace
               "-")
@@ -51,6 +108,7 @@
     :error-patterns
     ((error line-start (file-name) ":" line ":" column ": " (message) line-end))
     :modes (python-mode python-ts-mode))
+  
   (setq flycheck-phpcs-standard "PSR12"))
 
 (add-hook 'lsp-mode-hook
@@ -79,12 +137,6 @@
   (flycheck-mode t))
 
 (add-hook 'php-ts-mode-hook 'my-php-mode-setup)
-
-;; Format code
-(use-package format-all
-  :ensure t
-  :commands format-all-mode
-  :hook (prog-mode . format-all-mode))
 
 (provide 'dev)
 ;;; dev.el ends here.

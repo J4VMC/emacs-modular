@@ -26,14 +26,25 @@
   :ensure t
   :after php-mode)
 
-;; Configuration for pure TypeScript files (.ts)
+;; JavaScript and TypeScript Configuration
 (use-package typescript-mode
   :ensure t
+  :mode (("\\.ts\\'" . typescript-ts-mode)
+         ("\\.tsx\\'" . tsx-ts-mode)
+         ("\\.js\\'" . js-ts-mode)
+         ("\\.jsx\\'" . tsx-ts-mode))
   :hook ((typescript-ts-mode . lsp-deferred)
          (typescript-ts-mode . apheleia-mode)
-         (typescript-ts-mode . flycheck-mode))
+         (typescript-ts-mode . flycheck-mode)
+         (tsx-ts-mode . lsp-deferred)
+         (tsx-ts-mode . apheleia-mode)
+         (tsx-ts-mode . flycheck-mode)
+         (js-ts-mode . lsp-deferred)
+         (js-ts-mode . apheleia-mode)
+         (js-ts-mode . flycheck-mode))
   :config
-  (setq typescript-indent-level 2))
+  (setq typescript-indent-level 2
+        js-indent-level 2))
 
 ;; Web Technologies (HTML, Twig, JSX/TSX)
 (use-package web-mode
@@ -53,6 +64,7 @@
 (use-package python
   :ensure nil
   :hook ((python-ts-mode . lsp-deferred)
+	 (python-ts-mode . apheleia-mode)
          (python-ts-mode . (lambda ()
                              (setq-local tab-width 4
 					 python-indent-offset 4

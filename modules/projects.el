@@ -30,7 +30,7 @@
 
   ;; Configure built-in project.el to recognize .project files as project boundaries
   ;; This handles monorepo subprojects where you want to limit scope within a larger Git repo
-  (setq project-vc-extra-root-markers '(".project" "pyproject.toml" ".projectile"))
+  (setq project-vc-extra-root-markers '(".project" "pyproject.toml" ".projectile" "package.json"))
 
   ;; Custom function to detect Git submodules specifically
   ;; Submodules have .git files (not directories), so they need special handling
