@@ -23,11 +23,11 @@
   (lsp-eldoc-enable-hover t)            ; Display signature information in the echo area
   (lsp-enable-dap-auto-configure t)     ; Debug support
   (lsp-enable-file-watchers nil)
-  (lsp-enable-folding nil)              ; I disable folding since I use origami
+  (lsp-enable-folding t)
   (lsp-enable-imenu t)
-  (lsp-enable-indentation nil)          ; I use prettier
-  (lsp-enable-links nil)                ; No need since we have `browse-url'
-  (lsp-enable-on-type-formatting nil)   ; Prettier handles this
+  (lsp-enable-indentation t)
+  (lsp-enable-links t)
+  (lsp-enable-on-type-formatting t)
   (lsp-enable-suggest-server-download t) ; Useful prompt to download LSP providers
   (lsp-enable-symbol-highlighting t)     ; Shows usages of symbol at point in the current buffer
   (lsp-enable-text-document-color nil)   ; This is Treesitter's job
@@ -58,6 +58,21 @@
   
   :init
   (setq lsp-use-plists t))
+
+;; Disable LSP indentation and on-type formatting for JS/TS (let Prettier handle it)
+(add-hook 'typescript-ts-mode-hook 
+          (lambda () 
+            (setq-local lsp-enable-indentation nil)
+            (setq-local lsp-enable-on-type-formatting nil)))
+(add-hook 'tsx-ts-mode-hook 
+          (lambda () 
+            (setq-local lsp-enable-indentation nil)
+            (setq-local lsp-enable-on-type-formatting nil)))
+(add-hook 'js-ts-mode-hook 
+          (lambda () 
+            (setq-local lsp-enable-indentation nil)
+            (setq-local lsp-enable-on-type-formatting nil)))
+
 
 (use-package lsp-completion
   :no-require
