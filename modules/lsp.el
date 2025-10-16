@@ -10,51 +10,50 @@
   :hook ((lsp-mode . lsp-diagnostics-mode)
          (lsp-mode . lsp-enable-which-key-integration))
   :custom
-  (lsp-keymap-prefix "C-c l")           ; Prefix for LSP actions
-  (lsp-completion-provider :none)       ; Using Corfu as the provider
+  (lsp-keymap-prefix "C-c l")
+  (lsp-completion-provider :none)
   (lsp-diagnostics-provider :flycheck)
   (lsp-session-file (locate-user-emacs-file ".lsp-session"))
-  (lsp-log-io nil)                      ; IMPORTANT! Use only for debugging! Drastically affects performance
-  (lsp-keep-workspace-alive nil)        ; Close LSP server if all project buffers are closed
-  (lsp-idle-delay 0.5)                  ; Debounce timer for `after-change-function'
+  (lsp-log-io nil)
+  (lsp-keep-workspace-alive nil)
+  (lsp-idle-delay 0.5)
   ;; core
-  (lsp-enable-xref t)                   ; Use xref to find references
-  (lsp-auto-configure t)                ; Used to decide between current active servers
-  (lsp-eldoc-enable-hover t)            ; Display signature information in the echo area
-  (lsp-enable-dap-auto-configure t)     ; Debug support
+  (lsp-enable-xref t)
+  (lsp-auto-configure t)
+  (lsp-eldoc-enable-hover t)
+  (lsp-enable-dap-auto-configure t)
   (lsp-enable-file-watchers nil)
   (lsp-enable-folding t)
   (lsp-enable-imenu t)
   (lsp-enable-indentation t)
   (lsp-enable-links t)
   (lsp-enable-on-type-formatting t)
-  (lsp-enable-suggest-server-download t) ; Useful prompt to download LSP providers
-  (lsp-enable-symbol-highlighting t)     ; Shows usages of symbol at point in the current buffer
-  (lsp-enable-text-document-color nil)   ; This is Treesitter's job
-
-  (lsp-ui-sideline-show-hover nil)      ; Sideline used only for diagnostics
-  (lsp-ui-sideline-diagnostic-max-lines 20) ; 20 lines since typescript errors can be quite big
+  (lsp-enable-suggest-server-download t)
+  (lsp-enable-symbol-highlighting t)
+  (lsp-enable-text-document-color nil)
+  (lsp-ui-sideline-show-hover nil)
+  (lsp-ui-sideline-diagnostic-max-lines 20)
   ;; completion
   (lsp-completion-enable t)
-  (lsp-completion-enable-additional-text-edit t) ; Ex: auto-insert an import for a completion candidate
-  (lsp-enable-snippet nil)                         ; Important to provide full JSX completion
-  (lsp-completion-show-kind t)                   ; Optional
+  (lsp-completion-enable-additional-text-edit t)
+  (lsp-enable-snippet nil)
+  (lsp-completion-show-kind t)
   ;; headerline
-  (lsp-headerline-breadcrumb-enable t)  ; Optional, I like the breadcrumbs
-  (lsp-headerline-breadcrumb-enable-diagnostics nil) ; Don't make them red, too noisy
+  (lsp-headerline-breadcrumb-enable t)
+  (lsp-headerline-breadcrumb-enable-diagnostics nil)
   (lsp-headerline-breadcrumb-enable-symbol-numbers nil)
   (lsp-headerline-breadcrumb-icons-enable nil)
   ;; modeline
-  (lsp-modeline-code-actions-enable nil) ; Modeline should be relatively clean
-  (lsp-modeline-diagnostics-enable nil)  ; Already supported through `flycheck'
-  (lsp-modeline-workspace-status-enable nil) ; Modeline displays "LSP" when lsp-mode is enabled
-  (lsp-signature-doc-lines 1)                ; Don't raise the echo area. It's distracting
-  (lsp-ui-doc-use-childframe t)              ; Show docs for symbol at point
-  (lsp-eldoc-render-all nil)            ; This would be very useful if it would respect `lsp-signature-doc-lines', currently it's distracting
+  (lsp-modeline-code-actions-enable nil)
+  (lsp-modeline-diagnostics-enable nil)
+  (lsp-modeline-workspace-status-enable nil)
+  (lsp-signature-doc-lines 1)
+  (lsp-ui-doc-use-childframe t)
+  (lsp-eldoc-render-all nil)
   ;; lens
-  (lsp-lens-enable nil)                 ; Optional, I don't need it
+  (lsp-lens-enable nil)
   ;; semantic
-  (lsp-semantic-tokens-enable nil)      ; Related to highlighting, and we defer to treesitter
+  (lsp-semantic-tokens-enable nil)
   
   :init
   (setq lsp-use-plists t))
@@ -73,7 +72,6 @@
             (setq-local lsp-enable-indentation nil)
             (setq-local lsp-enable-on-type-formatting nil)))
 
-
 (use-package lsp-completion
   :no-require
   :hook ((lsp-mode . lsp-completion-mode)))
@@ -87,8 +85,8 @@
               ("C-c C-d" . 'lsp-ui-doc-glance))
   :after (lsp-mode)
   :config (setq lsp-ui-doc-enable t
-                lsp-ui-doc-show-with-cursor nil      ; Don't show doc when cursor is over symbol - too distracting
-                lsp-ui-doc-include-signature t       ; Show signature
+                lsp-ui-doc-show-with-cursor nil
+                lsp-ui-doc-include-signature t
                 lsp-ui-doc-position 'at-point))
 
 (use-package consult-lsp
@@ -100,16 +98,13 @@
   :after (lsp-mode treemacs))
 
 (use-package lsp-eslint
-  :demand t
   :after lsp-mode
   :custom
   (lsp-eslint-auto-fix-on-save nil)
   (lsp-eslint-enable t)
   (lsp-eslint-package-manager "npm")
-  ;; Point to the actual ESLint language server location
   (lsp-eslint-server-command '("vscode-eslint-language-server" "--stdio"))
   :config
-  ;; Explicitly register ESLint for these modes
   (add-to-list 'lsp-language-id-configuration '(typescript-ts-mode . "typescript"))
   (add-to-list 'lsp-language-id-configuration '(tsx-ts-mode . "typescriptreact"))
   (add-to-list 'lsp-language-id-configuration '(js-ts-mode . "javascript")))
@@ -130,14 +125,65 @@
     (add-to-list 'lsp-tailwindcss-major-modes tw-major-mode)))
 
 (use-package lsp-metals
-  :ensure t)
+  :ensure t
+  :hook (scala-ts-mode . (lambda ()
+                           (require 'lsp-metals)
+                           (lsp-deferred)))
+  :config
+  (setq lsp-metals-server-args '("-J-Dmetals.allow-multiline-string-formatting=off")
+        lsp-metals-show-implicit-arguments t
+        lsp-metals-show-implicit-conversions-and-classes t
+        lsp-metals-show-inferred-type t))
 
 (use-package lsp-pyright
   :ensure t
-  :custom (lsp-pyright-langserver-command "basedpyright") ;; or basedpyright
+  :custom (lsp-pyright-langserver-command "basedpyright")
   :hook (python-ts-mode . (lambda ()
                             (require 'lsp-pyright)
-                            (lsp-deferred))))  ; or lsp-deferred
+                            (lsp-deferred))))
+
+(use-package lsp-rust
+  :after lsp-mode
+  :hook (rust-ts-mode . (lambda ()
+                          (require 'lsp-rust)
+                          (lsp-deferred)))
+  :config
+  (setq lsp-rust-analyzer-cargo-watch-command "clippy"
+        lsp-rust-analyzer-server-display-inlay-hints t
+        lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
+        lsp-rust-analyzer-display-chaining-hints t
+        lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil
+        lsp-rust-analyzer-display-closure-return-type-hints t
+        lsp-rust-analyzer-display-parameter-hints nil
+        lsp-rust-analyzer-display-reborrow-hints nil))
+
+;; Go LSP configuration (built into lsp-mode)
+(with-eval-after-load 'lsp-mode
+  (add-hook 'go-ts-mode-hook #'lsp-deferred)
+  
+  ;; Go-specific settings
+  (setq lsp-go-analyses '((fieldalignment . t)
+                          (nilness . t)
+                          (unusedwrite . t)
+                          (unusedparams . t))
+        lsp-go-use-gofumpt t
+        lsp-go-codelenses '((generate . t)
+                            (test . t)
+                            (tidy . t))))
+
+;; SQL LSP configuration
+(with-eval-after-load 'lsp-mode
+  (add-hook 'sql-ts-mode-hook #'lsp-deferred)
+  
+  ;; Register SQL language server
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection '("sql-language-server" "up" "--method" "stdio"))
+    :major-modes '(sql-mode sql-ts-mode)
+    :priority -1
+    :server-id 'sql-ls))
+  
+  (setq lsp-sqls-workspace-config-path nil))
 
 (provide 'lsp)
 ;;; lsp.el ends here.
