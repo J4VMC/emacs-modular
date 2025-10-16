@@ -142,6 +142,21 @@
                             (require 'lsp-pyright)
                             (lsp-deferred))))
 
+;; Ensure project.el is loaded
+(require 'project)
+
+;; Function to set pyright paths based on the current project
+(defun set-pyright-paths ()
+  "Set the python.analysis.extraPaths for pyright based on the current project."
+  (let ((project-root (project-current)))
+    (when project-root
+      (setq lsp-pyright-workspace-config
+            `(:python.analysis.extraPaths [,project-root])))))
+
+;; Add the function to the python-mode hook
+(add-hook 'python-mode-hook 'set-pyright-paths)
+
+
 (use-package lsp-rust
   :after lsp-mode
   :hook (rust-ts-mode . (lambda ()
