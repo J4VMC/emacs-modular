@@ -55,6 +55,7 @@
 	     (sql-mode . sql-ts-mode)
 	     (xml-mode . xml-ts-mode)
 	     (scala-mode . scala-ts-mode)
+	     (rust-mode . rust-ts-mode)
 	     (js-json-mode . json-ts-mode)))
     (add-to-list 'major-mode-remap-alist mapping))
   :config

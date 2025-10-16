@@ -206,7 +206,7 @@ composer global require phpunit/phpunit
 fish_add_path (composer global config bin-dir --absolute)
 ```
 
-**Test it works:**
+_Test it works:_
 
 ```bash
 which phpcs  # Should show a path

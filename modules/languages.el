@@ -152,9 +152,14 @@
 ;; Rust Language
 (use-package rust-mode
   :ensure t
-  :hook ((rust-ts-mode . lsp-deferred)      ; Auto-start LSP
-         (rust-ts-mode . apheleia-mode)     ; Auto-formatting on save
-         (rust-ts-mode . flycheck-mode)))   ; On-the-fly linting
+  :hook ((rust-ts-mode . (lambda ()
+                           ;; Enable crucial rust-analyzer features
+                           (setq-local lsp-rust-analyzer-proc-macro-enable t)
+                           (setq-local lsp-rust-analyzer-inlay-hints-enable t)
+                           ;; Enable the core modes
+                           (lsp-deferred)
+                           (apheleia-mode 1)
+                           (flycheck-mode 1)))))
 
 (use-package cargo
   :ensure t
@@ -164,7 +169,9 @@
 (use-package scala-ts-mode
   :ensure t
   :interpreter ("scala" . scala-ts-mode)
-  :hook (scala-ts-mode . lsp-deferred)) ; Only hook LSP, Metals handles the rest.
+  :hook ((scala-ts-mode . lsp-deferred)
+	 (scala-ts-mode . apheleia-mode)
+	 (scala-ts-mode . flycheck-mode)))
 
 ;; Enable sbt mode for executing sbt commands
 (use-package sbt-mode
@@ -211,22 +218,6 @@
   :commands (docker)
   :bind ("C-c d" . docker))
 
-;; Markdown
-(use-package markdown-mode
-  :ensure t
-  :hook ((markdown-ts-mode . lsp-deferred)
-         (markdown-ts-mode . apheleia-mode)
-         (markdown-ts-mode . flycheck-mode))
-  :config
-  (setq markdown-fontify-code-blocks-natively t)
-  (setq markdown-command "pandoc"))
-
-(use-package markdown-preview-mode
-  :ensure t
-  :after markdown-mode
-  ;; Automatically start the live preview when you open a markdown file.
-  :hook (markdown-ts-mode . markdown-preview-mode))
-
 ;; MongoDB
 (use-package mongo
   :ensure t
@@ -269,6 +260,85 @@
   :ensure t
   :config
   (require 'bookmark))
+
+;; --- Local, Live Markdown Preview (Pandoc + EWW) ---
+
+;; FIX: Ensure Emacs can find pandoc and other shell commands
+;; (Replace the path with the output of 'which pandoc' on your system)
+(setq exec-path (append '("/usr/local/bin") exec-path))
+
+(use-package markdown-mode
+  :ensure t
+  :hook ((markdown-mode . flycheck-mode)
+         (markdown-mode . apheleia-mode))
+  :config
+  (setq markdown-fontify-code-blocks-natively t)
+  (setq markdown-command "pandoc")
+
+  ;; Buffer name for preview
+  (defvar my/markdown-preview-buffer "*markdown-preview-eww*"
+    "Buffer name for the local Markdown preview.")
+
+  (defun my/markdown-preview-render ()
+    "Render the current buffer's Markdown to HTML and update the preview buffer."
+    (let* ((markdown-buffer (current-buffer))
+           (html-output
+            (with-temp-buffer
+              (insert-buffer-substring markdown-buffer)
+              (call-process-region (point-min) (point-max)
+                                   "pandoc"
+                                   t        ; Replace buffer contents with output
+                                   t        ; Output goes to this buffer
+                                   nil      ; No error buffer
+                                   "-f" "markdown" "-t" "html" "-s")
+              (buffer-string))))
+      (when (and html-output (> (length html-output) 0))
+	(with-current-buffer (get-buffer-create my/markdown-preview-buffer)
+          (eww-mode)
+          (let ((inhibit-read-only t))
+            (erase-buffer)
+            (insert html-output)
+            (let ((document (libxml-parse-html-region (point-min) (point-max))))
+              (erase-buffer)
+              (shr-insert-document document)))))))
+
+  (defun my/markdown-preview-split ()
+    "Create a side-by-side live preview of the current Markdown buffer."
+    (interactive)
+    (delete-other-windows)
+    (split-window-right)
+    (my/markdown-preview-render)
+    (other-window 1)
+    (switch-to-buffer my/markdown-preview-buffer)
+    (other-window -1)
+    (my/markdown-live-preview-start))
+
+  (defvar my/markdown-live-preview-timer nil
+    "Idle timer for live Markdown preview updates.")
+
+  (defun my/markdown-live-preview-update ()
+    "Update the Markdown preview if the buffer is modified and the preview is visible."
+    (when (and (buffer-modified-p) (get-buffer-window my/markdown-preview-buffer))
+      (my/markdown-preview-render)))
+
+  (defun my/markdown-live-preview-start ()
+    "Start the live preview idle timer."
+    (interactive)
+    (unless my/markdown-live-preview-timer
+      (setq my/markdown-live-preview-timer
+            (run-with-idle-timer 1.0 t #'my/markdown-live-preview-update))))
+
+  (defun my/markdown-live-preview-stop ()
+    "Stop the live preview timer and kill the preview buffer."
+    (interactive)
+    (when my/markdown-live-preview-timer
+      (cancel-timer my/markdown-live-preview-timer)
+      (setq my/markdown-live-preview-timer nil))
+    (when-let ((buffer (get-buffer my/markdown-preview-buffer)))
+      (kill-buffer buffer)))
+
+  (define-key markdown-mode-map (kbd "C-c p") #'my/markdown-preview-split)
+  (define-key markdown-mode-map (kbd "C-c P") #'my/markdown-live-preview-stop))
 
 (provide 'languages)
 ;;; languages.el ends here

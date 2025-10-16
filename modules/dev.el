@@ -35,6 +35,25 @@
   (setf (alist-get 'ruff apheleia-formatters)
 	'("ruff" "format" "--stdin-filename" filepath "-"))
 
+  ;; Go - goimports (formats and organizes imports)
+  (setf (alist-get 'goimports apheleia-formatters)
+	'("goimports"))
+
+  ;; Rust - rustfmt
+  (setf (alist-get 'rustfmt apheleia-formatters)
+        '("rustfmt" "--emit=stdout"))
+
+  ;; Scala - scalafmt
+  (setf (alist-get 'scalafmt apheleia-formatters)
+	'("scalafmt" "--stdin" "--stdout"))
+
+  ;; SQL - sql-formatter
+  (setf (alist-get 'sql-formatter apheleia-formatters)
+	'("sql-formatter" 
+          "--language" "postgresql"
+          "--indent" "2"
+          "--uppercase"))
+
 
   ;; --- Mode Associations ---
   ;; PHP
@@ -43,6 +62,20 @@
   ;; Python
   (setf (alist-get 'python-mode apheleia-mode-alist) 'ruff)
   (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
+
+  ;; Go
+  (setf (alist-get 'go-mode apheleia-mode-alist) 'goimports)
+  (setf (alist-get 'go-ts-mode apheleia-mode-alist) 'goimports)
+
+  ;; Rust
+  (setf (alist-get 'rust-ts-mode apheleia-mode-alist) 'rustfmt)
+
+  ;; Scala
+  (setf (alist-get 'scala-ts-mode apheleia-mode-alist) 'scalafmt)
+
+  ;; SQL
+  (setf (alist-get 'sql-mode apheleia-mode-alist) 'sql-formatter)
+  (setf (alist-get 'sql-ts-mode apheleia-mode-alist) 'sql-formatter)
   
   ;; JavaScript / TypeScript
   (setf (alist-get 'typescript-ts-mode apheleia-mode-alist) 'prettier-typescript)
@@ -100,7 +133,7 @@
     "A Python syntax and style checker using Ruff."
     :command ("ruff" "check"
               ;; Add the rule sets you want to enable globally
-              "--select" "E,F,W,I,D,UP,B,SIM,S"
+              "--select" "E,F,W,D,UP,B,SIM,S"
               "--output-format" "concise"
               "--stdin-filename" source-inplace
               "-")
@@ -108,6 +141,19 @@
     :error-patterns
     ((error line-start (file-name) ":" line ":" column ": " (message) line-end))
     :modes (python-mode python-ts-mode))
+
+  (flycheck-define-checker sql-sqlint
+    "A SQL syntax checker using sqlint.
+See URL `https://github.com/purcell/sqlint'."
+    :command ("sqlint")
+    :standard-input t
+    :error-patterns
+    ((error line-start "stdin:" line ":" column ":ERROR " (message) line-end)
+     (warning line-start "stdin:" line ":" column ":WARNING " (message) line-end))
+    :modes (sql-mode sql-ts-mode))
+
+  ;; Add SQL to the list of checkers
+  (add-to-list 'flycheck-checkers 'sql-sqlint)
   
   (setq flycheck-phpcs-standard "PSR12"))
 
@@ -115,6 +161,16 @@
           (lambda ()
             (when (derived-mode-p 'python-mode 'python-ts-mode)
               (flycheck-add-next-checker 'lsp 'python-ruff))))
+
+(add-hook 'lsp-mode-hook
+          (lambda ()
+            (when (derived-mode-p 'go-mode 'go-ts-mode)
+              (flycheck-add-next-checker 'lsp 'golangci-lint))))
+
+(add-hook 'lsp-mode-hook
+          (lambda ()
+            (when (derived-mode-p 'sql-mode 'sql-ts-mode)
+              (flycheck-add-next-checker 'lsp 'sql-sqlint))))
 
 (use-package flycheck-golangci-lint
   :ensure t
@@ -137,6 +193,12 @@
   (flycheck-mode t))
 
 (add-hook 'php-ts-mode-hook 'my-php-mode-setup)
+
+(add-hook 'lsp-mode-hook
+          (lambda ()
+            (when (derived-mode-p 'scala-ts-mode)
+              ;; Metals provides diagnostics through LSP
+              (flycheck-mode 1))))
 
 (provide 'dev)
 ;;; dev.el ends here.
