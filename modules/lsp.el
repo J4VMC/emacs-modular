@@ -59,7 +59,7 @@
   (setq lsp-use-plists t))
 
 ;; Disable LSP indentation and on-type formatting for JS/TS (let Prettier handle it)
-(add-hook 'typescript-ts-mode-hook 
+(add-hook 'typescript-ts-mode-hook
           (lambda () 
             (setq-local lsp-enable-indentation nil)
             (setq-local lsp-enable-on-type-formatting nil)))

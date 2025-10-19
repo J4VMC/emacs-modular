@@ -149,21 +149,57 @@
   ;; It formats and organizes imports automatically.
   (setq gofmt-command "goimports"))
 
-;; Rust Language
-(use-package rust-mode
+;; Rust Language (with Rustic)
+(use-package rustic
   :ensure t
-  :hook ((rust-ts-mode . (lambda ()
-                           ;; Enable crucial rust-analyzer features
-                           (setq-local lsp-rust-analyzer-proc-macro-enable t)
-                           (setq-local lsp-rust-analyzer-inlay-hints-enable t)
-                           ;; Enable the core modes
-                           (lsp-deferred)
-                           (apheleia-mode 1)
-                           (flycheck-mode 1)))))
+  :mode ("\\.rs\\'" . rustic-mode)
+  :hook ((rustic-mode . lsp-deferred)
+         (rustic-mode . apheleia-mode)
+         (rustic-mode . flycheck-mode))
+  :bind (:map rustic-mode-map
+              ;; --- Essential Bindings ---
+              ("C-c C-c l" . flycheck-list-errors)
+              ("C-c C-c a" . lsp-execute-code-action)
+              ("C-c C-c r" . lsp-rename)
+              ("C-c C-d" . dap-hydra)
+              ;; --- Navigation & Info ---
+              ("M-." . lsp-find-definition)
+              ("M-," . pop-tag-mark)
+              ("M-?" . lsp-find-references)
+              ("C-c C-c h" . lsp-documentation)
+              ("M-j" . lsp-ui-imenu)
+              ;; --- Rust Analyzer Specific ---
+              ("C-c C-c s" . lsp-rust-analyzer-status)
+              ("C-c C-c e" . lsp-rust-analyzer-expand-macro)
+              ("C-c C-c j" . lsp-rust-analyzer-join-lines)
+              ;; --- Project & Workspace ---
+              ("C-c C-c q" . lsp-workspace-restart)
+              ("C-c C-c Q" . lsp-workspace-shutdown))
+  :config
+  ;; Don't use rustic's format-on-save. Let apheleia handle it consistently.
+  (setq rustic-format-on-save nil)
+  
+  ;; Use lsp-mode as the backend (default and recommended)
+  (setq rustic-lsp-client 'lsp-mode)
+  
+  ;; Ensure treesit is used for syntax highlighting and parsing
+  ;; This is important for proper font-locking and structural features
+  (setq rustic-use-tree-sitter t)
+  
+  ;; Use clippy for better linting
+  (setq rustic-flycheck-checker 'rustic-clippy)
+  
+  ;; These are already configured via lsp-rust in your lsp.el,
+  ;; but rustic variables also work as fallbacks
+  (setq rustic-analyzer-proc-macro-enable t)
+  (setq rustic-display-inlay-hints t)
+  (setq rustic-analyzer-display-chaining-hints t)
+  (setq rustic-analyzer-display-closure-return-type-hints t)
+  (setq rustic-analyzer-display-lifetime-elision-hints-enable "skip_trivial"))
 
 (use-package cargo
   :ensure t
-  :hook (rust-ts-mode . cargo-minor-mode))
+  :hook (rustic-mode . cargo-minor-mode))
 
 ;; Scala Language
 (use-package scala-ts-mode

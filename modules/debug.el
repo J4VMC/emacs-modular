@@ -36,6 +36,8 @@
   (require 'dap-php)
   (require 'dap-dlv-go)
   (require 'dap-lldb)
+  (require 'dap-gdb-lldb)
+  (dap-gdb-lldb-setup)
   (require 'dap-node)
   (dap-register-debug-template "Python :: Debug (Flask)"
 			       (list :type "python" :args "" :cwd nil :env '(("FLASK_APP" . "app:app") ("FLASK_ENV" . "development"))
@@ -114,15 +116,11 @@
 (use-package dap-lldb
   :ensure nil
   :after dap-mode
-  :hook ((rust-ts-mode swift-ts-mode) . dap-lldb-setup)
+  :hook ((rust-ts-mode) . dap-lldb-setup)
   :config
   (dap-register-debug-template "Rust :: Debug (Binary)"
 			       (list :type "lldb" :name "Rust :: Debug (Binary)" :request "launch"
 				     :program "${workspaceFolder}/target/debug/${workspaceFolderBasename}"
-				     :cwd "${workspaceFolder}"))
-  (dap-register-debug-template "Swift :: Debug (Binary)"
-			       (list :type "lldb" :name "Swift :: Debug (Binary)" :request "launch"
-				     :program "${workspaceFolder}/.build/debug/${workspaceFolderBasename}"
 				     :cwd "${workspaceFolder}")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
