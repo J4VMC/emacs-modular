@@ -58,15 +58,6 @@
 ;; --- Editor Enhancements ---
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Visual flair for numbers and operators.2
-(use-package highlight-numbers
-  :ensure t
-  :hook (prog-mode . highlight-numbers-mode))
-
-(use-package highlight-operators
-  :ensure t
-  :hook (prog-mode . highlight-operators-mode))
-
 ;; Display line numbers in programming modes.
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 (setq-default display-line-numbers-width 3)
@@ -141,8 +132,8 @@
 (use-package rainbow-delimiters
   :ensure t
   :hook ((prog-mode . rainbow-delimiters-mode)
-         (text-mode . rainbow-delimiters-mode)
-         (markdown-mode . rainbow-delimiters-mode)))
+	 (text-mode . rainbow-delimiters-mode)
+	 (markdown-mode . rainbow-delimiters-mode)))
 
 ;; Display vertical lines to visualize indentation levels.
 (use-package highlight-indent-guides

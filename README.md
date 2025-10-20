@@ -264,18 +264,10 @@ which metals  # Should show a path
 #### SQL
 
 ```bash
-# Install rbenv
-brew install rbenv
-
-# Add rbenv to fish
-echo 'status --is-interactive; and rbenv init -| source' >> ~/.config/fish/config.fish
-
-#install latest version of Ruby (always check it first)
-rbenv install -l # Use the highest of the three-versions, like 0.0.0
-rbenv install 3.4.7 && rbenv global 3.4.7
-
-# Install SQL formatter/linter
-gem install sqlint
+# Install SQL formatter, linter, and language server
+npm install -g sqlint
+npm install -g sql-language-server
+npm install -g sql-formatter
 
 # Optional: Install PostgreSQL client for testing
 brew install postgresql@18
@@ -402,6 +394,8 @@ Emacs uses special notation for keyboard shortcuts:
 - `s-j` = Hold Command (⌘) and press j
 
 ## Essential Keyboard Shortcuts
+
+Some of the shortcuts below are custom for this configuration. All custom keybindings aim to be as ergonomic as possible to prevent the dreaded _Emacs pinky_. We don't use evil-mode because there's no point in doing that.
 
 ### Files and Buffers
 
