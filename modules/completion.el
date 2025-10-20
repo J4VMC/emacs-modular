@@ -132,16 +132,16 @@
   ;; By default, tempel looks at the file "templates" in
   ;; user-emacs-directory, but you can customize that with the
   ;; tempel-path variable:
-  ;; :custom
-  ;; (tempel-path (concat user-emacs-directory "custom_template_file"))
+  :custom
+  (tempel-path (concat user-emacs-directory "custom_template_file"))
   :bind (("M-*" . tempel-insert)
-         ("M-+" . tempel-complete)
-         :map tempel-map
-         ("C-c RET" . tempel-done)
-         ("C-<down>" . tempel-next)
-         ("C-<up>" . tempel-previous)
-         ("M-<down>" . tempel-next)
-         ("M-<up>" . tempel-previous))
+	 ("M-+" . tempel-complete)
+	 :map tempel-map
+	 ("C-c RET" . tempel-done)
+	 ("C-<down>" . tempel-next)
+	 ("C-<up>" . tempel-previous)
+	 ("M-<down>" . tempel-next)
+	 ("M-<up>" . tempel-previous))
   :init
   ;; Make a function that adds the tempel expansion function to the
   ;; list of completion-at-point-functions (capf).

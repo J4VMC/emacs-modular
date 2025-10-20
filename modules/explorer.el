@@ -8,8 +8,6 @@
 ;; --- File Management (Dired) ---
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(message "DEBUG: files.el is being loaded now!")
-
 (use-package dired
   :ensure nil
   :commands (dired)
