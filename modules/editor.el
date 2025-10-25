@@ -73,20 +73,36 @@
          (markdown-mode . hl-line-mode)))
 
 ;; Automatically match and insert pairs of parentheses, quotes, etc.
-(use-package smartparens
-  :ensure t
-  :hook ((prog-mode . smartparens-mode)
-         (text-mode . smartparens-mode)
-         (markdown-mode . smartparens-mode))
-  :config
-  ;; The require line needs to be wrapped
-  (with-eval-after-load 'org
-    (require 'smartparens-config)))
+;;(use-package smartparens
+;;  :ensure t
+;;  :hook ((prog-mode . smartparens-mode)
+;;         (text-mode . smartparens-mode)
+;;         (markdown-mode . smartparens-mode))
+;;  :config
+;;  ;; The require line needs to be wrapped
+;;  (with-eval-after-load 'org
+;;    (require 'smartparens-config)))
+
+(use-package elec-pair
+  :config ;; Disable electric pair in minibuffer
+  (defun my/inhibit-electric-pair-mode (char)
+    (or (minibufferp) (electric-pair-conservative-inhibit char)))
+  (setq electric-pair-inhibit-predicate
+        #'my/inhibit-electric-pair-mode)
+  (electric-pair-mode t)
+  ;; The ‘<’ and ‘>’ are not ‘parenthesis’, so give them no compleition.
+  (setq electric-pair-inhibit-predicate
+	(lambda (c)
+          (or (member c '(?< ?> ?~))
+              (electric-pair-default-inhibit c)))))
+
+(setq electric-pair-pairs '((?\{ . ?\})))
 
 ;; Highlight todos
 (use-package hl-todo
   :ensure t
   :init (global-hl-todo-mode))
+
 
 ;; Crux bundles many useful interactive commands to enhance the overall Emacs experience
 (use-package crux
@@ -134,6 +150,7 @@
   :hook ((prog-mode . rainbow-delimiters-mode)
 	 (text-mode . rainbow-delimiters-mode)
 	 (markdown-mode . rainbow-delimiters-mode)))
+
 
 ;; Display vertical lines to visualize indentation levels.
 (use-package highlight-indent-guides

@@ -376,5 +376,8 @@
   (define-key markdown-mode-map (kbd "C-c p") #'my/markdown-preview-split)
   (define-key markdown-mode-map (kbd "C-c P") #'my/markdown-live-preview-stop))
 
+(use-package terraform-mode
+  :ensure t)
+
 (provide 'languages)
 ;;; languages.el ends here

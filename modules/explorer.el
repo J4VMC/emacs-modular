@@ -27,5 +27,8 @@
   ;; This ensures dirvish takes over dired BEFORE dired is ever opened.
   (dirvish-override-dired-mode t))
 
+(use-package oil
+  :ensure (:host github :repo "yibie/Oil.el"))
+
 (provide 'explorer)
 ;;; explorer.el ends here

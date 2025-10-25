@@ -5,7 +5,6 @@
 
 (use-package treesit
   :ensure nil
-  :mode (("\\.tsx\\'" . tsx-ts-mode))
   :preface
   (defun setup-install-grammars ()
     "Install Tree-sitter grammars if they are absent."
