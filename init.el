@@ -192,14 +192,15 @@
   ;; As an example, we hide 'Eldoc Mode', since it's almost always on.
   (diminish 'eldoc-mode))
 
-;; Install and load the Gruvbox theme.
-(use-package gruvbox-theme
+;; Install and load the Catppuccin theme.
+(use-package catppuccin-theme
   :ensure t
   :init
   ;; We load the theme in ':init' (which runs *before* the package
   ;; is loaded) to prevent the default Emacs theme from "flashing"
   ;; at startup. This provides a smooth, flicker-free launch.
-  (load-theme 'gruvbox-dark-hard t))
+  ;; Catppuccin Mocha (dark theme) is the default.
+  (load-theme 'catppuccin t))
 
 ;;; ----------------------------------------------------------------------
 ;;; Customization File
