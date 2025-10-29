@@ -160,13 +160,6 @@
 (use-package hydra
   :ensure t)
 
-;; This mode *aggressively* re-indents your code as you type.
-;; It tries to keep your code *always* perfectly indented.
-(use-package aggressive-indent
-  :ensure t
-  :custom
-  (global-aggressive-indent-mode 1))
-
 ;; This package makes commands like `kill` (cut) and `copy`
 ;; apply to the *entire line* if no region (selection) is active.
 (use-package whole-line-or-region
