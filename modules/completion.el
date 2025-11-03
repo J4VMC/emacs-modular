@@ -115,7 +115,7 @@
   ;; It's set to be smart-case, show line numbers, find hidden files,
   ;; and ignore the `.git` directory.
   (setq consult-ripgrep-args
-        "rg --null --line-buffered --max-columns=150 --max-columns-preview --max-file-size 1M --ignore-case --path-separator /\\ --smart-case --no-heading --line-number --hidden --glob !.git/ .")
+        "rg --null --line-buffered --max-columns=150 --max-columns-preview --max-filesize 1M --ignore-case --path-separator /\\ --smart-case --no-heading --line-number --hidden --glob !.git/ .")
   ;; This lets you press `/` in a consult search to "narrow"
   ;; the results even further with a different search style.
   (setq consult-narrow-key "/"))
