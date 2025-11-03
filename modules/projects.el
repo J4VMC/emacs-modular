@@ -41,10 +41,10 @@
         ;; **PERFORMANCE TWEAK**:
         ;; Use `rg` (ripgrep) to find all files in the project.
         ;; This is *much* faster than the default Emacs `find` command.
-        projectile-generic-command "rg -0 --files --color=never --hidden --glob !.git/ --max-file-size 1M"
+        projectile-generic-command "rg -0 --files --color=never --hidden --glob !.git/ --max-filesize 1M"
         ;; **PERFORMANCE TWEAK**:
         ;; Also use `rg` for project-wide *searching* (grepping).
-        projectile-grep-command "rg -n --with-filename --no-heading --max-columns=150 --ignore-case --max-file-size 1M --glob !.git/"
+        projectile-grep-command "rg -n --with-filename --no-heading --max-columns=150 --ignore-case --max-filesize 1M --glob !.git/"
         ;; Cache the list of project files for even more speed.
         projectile-enable-caching t)
   :config
