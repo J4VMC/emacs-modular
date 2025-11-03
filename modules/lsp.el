@@ -279,25 +279,38 @@
   :ensure t
   ;; Use `basedpyright`, a community fork, instead of the default.
   :custom (lsp-pyright-langserver-command "basedpyright")
+  (lsp-pyright-python-executable-cmd "python3")
   :hook (python-ts-mode . (lambda ()
                             (require 'lsp-pyright)
                             ;; Use `lsp-deferred` for fast file loading.
                             (lsp-deferred))))
 
-;; Ensure Emacs's built-in project management is loaded.
-(require 'project)
-
-;; This is a helper function to fix Python import errors.
 (defun set-pyright-paths ()
-  "Set the python.analysis.extraPaths for pyright based on the current project."
-  ;; Find the root of the current project (e.g., the git repo root).
-  (let ((project-root (project-current)))
+  "Set pyright extraPaths and dynamically set pythonVersion from pyenv."
+  ;; Find the root of the current project (e.g., the git repo root)
+  (let ((project-root (projectile-project-root))) ; <-- Use projectile-project-root
     (when project-root
-      ;; Tell pyright: "When you look for modules,
-      ;; also look in the project's root directory."
-      ;; This fixes "module not found" errors for local project imports.
-      (setq lsp-pyright-workspace-config
-            `(:python.analysis.extraPaths [,project-root])))))
+      (let* (
+             ;; Call `pyenv version-name` to get the active version
+             (py-version-full (shell-command-to-string "pyenv version-name"))
+             
+             ;; Clean the output (e.g., "3.14.0\n" -> "3.14.0")
+             (py-version-clean (trim-string py-version-full))
+             
+             ;; Split into parts ("3" "14" "0")
+             (py-version-parts (split-string py-version-clean "\\."))
+             
+             ;; Re-join as "3.14" (or whatever the current version is)
+             (py-version-major-minor (concat (nth 0 py-version-parts) "." (nth 1 py-version-parts))))
+        
+        ;; Set the config for lsp-pyright
+        (setq lsp-pyright-workspace-config
+              `(:python.analysis.extraPaths [,project-root]
+					    ;; Pass the dynamically found version
+					    :pythonVersion ,py-version-major-minor))))))
+
+;; Run our helper function every time we open a Python file.
+(add-hook 'python-mode-hook 'set-pyright-paths)
 
 ;; Run our helper function every time we open a Python file.
 (add-hook 'python-mode-hook 'set-pyright-paths)

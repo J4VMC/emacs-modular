@@ -288,32 +288,33 @@
 ;; This section defines a set of functions to automatically update
 ;; your packages once per day, silently in the background.
 
-;; A variable to store the date of the last update (e.g., "2025-10-25").
-;; This will be saved in your 'custom.el' file.
-(defvar my/last-elpaca-update-date nil
-  "The date of the last automatic Elpaca package upgrade (YYYY-MM-DD).")
+;; Use `defcustom` here so the variable is registered with the
+;; customize system and will be reliably saved in `custom.el`.
+(defcustom my/last-elpaca-update-date nil
+  "The date of the last automatic Elpaca package upgrade (YYYY-MM-DD)."
+  :type '(choice (const nil) string)  ; Fixed: Allow nil or string
+  :group 'convenience)
 
 ;; This is a "safe" function to run the update.
 (defun my/elpaca-auto-update ()
   "Run `elpaca-update-all` safely and silently.
 Logs progress to *Messages* without requiring user interaction."
-  (message "Elpaca: Checking for package updates...")
-  ;; Run this silently: don't show noisy logs or pop up the Elpaca buffer.
-  (let ((inhibit-message t)
-        (elpaca-log-functions nil))
+  (message "Checking for package updates...")
+  ;; We still use `let` to set `elpaca-log-functions` to nil,
+  ;; which prevents the *Elpaca Log* buffer from popping up.
+  ;; We *remove* `inhibit-message` so we can see success or failure.
+  (let ((elpaca-log-functions nil))
     ;; Use 'condition-case' (try...catch) to handle errors.
     (condition-case err
         ;; --- Try ---
         (progn
           (elpaca-update-all) ;; Run the update
-          (message "Elpaca: Packages updated successfully on %s."
+          (message "Packages updated successfully on %s."
                    (format-time-string "%Y-%m-%d %H:%M")))
       ;; --- Catch ---
       (error
-       ;; If an error happens, just log it to *Messages* instead of crashing.
-       (message "Elpaca: Update failed — %s" (error-message-string err)))))
-  ;; Always log that the process finished.
-  (message "Elpaca: Automatic daily update process finished."))
+       ;; If an error happens, log it to *Messages* instead of crashing.
+       (message "Automatic daily package update failed — %s" (error-message-string err))))))
 
 ;; This function checks if an update is needed.
 (defun my/run-daily-elpaca-update-if-needed ()
@@ -321,7 +322,7 @@ Logs progress to *Messages* without requiring user interaction."
   (let ((current-date (format-time-string "%Y-%m-%d")))
     ;; If the last update date is *not* today...
     (unless (equal my/last-elpaca-update-date current-date)
-      (message "Elpaca: Running daily package update...")
+      (message "Running daily package update in the background!")
       ;; ...run the safe update function.
       (my/elpaca-auto-update)
       ;; ...update the variable to today's date.
@@ -329,14 +330,18 @@ Logs progress to *Messages* without requiring user interaction."
       ;; ...and save this new date to 'custom.el' so we remember it
       ;; next time Emacs starts.
       (customize-save-variable
-       'my/last-elpaca-update-date my/last-elpaca-update-date))))
+       'my/last-elpaca-update-date my/last-elpaca-update-date)
+      (message "Package update finished!")))
+  (message "All packages are up to date!"))
 
-;; Finally, schedule the check to run *after* startup.
-(add-hook 'emacs-startup-hook
+;; Finally, schedule the check to run *after* Elpaca initializes.
+;; Changed from 'emacs-startup-hook' to 'elpaca-after-init-hook'
+;; to ensure Elpaca is fully ready before attempting updates.
+(add-hook 'elpaca-after-init-hook
           (lambda ()
             ;; Don't run this *immediately* at startup; that would slow
-            ;; it down. Instead, wait for Emacs to be idle for 10
-            ;; seconds, *then* run the check. This is polite.
-            (run-with-idle-timer 10 nil #'my/run-daily-elpaca-update-if-needed)))
+            ;; it down. Instead, wait for Emacs to be idle for 30
+            ;; seconds, *then* run the check. This is polite and safe.
+            (run-with-idle-timer 30 nil #'my/run-daily-elpaca-update-if-needed)))
 
 ;;; init.el ends here
