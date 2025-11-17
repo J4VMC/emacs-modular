@@ -56,6 +56,13 @@
   ;; directory (e.g., your `tempel` snippets file), which can be noisy.
   (setq magit-todos-exclude-globs '("templates")))
 
+(use-package conventional-commit
+  :ensure (:host github :repo "akirak/conventional-commit.el")
+  :hook
+  ;; This automatically turns on conventional-commit-mode
+  ;; whenever you open a commit buffer.
+  (git-commit-mode . conventional-commit-mode))
+
 ;;; ----------------------------------------------------------------------
 ;;; API Testing (restclient)
 ;;; ----------------------------------------------------------------------

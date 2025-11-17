@@ -187,12 +187,10 @@
 
 ;; 4. Add Treemacs keybindings to the *same* `s-p` map...
 (with-eval-after-load 'treemacs
-  ;; `s-p t` -> Toggle Treemacs window
-  (define-key my-jump-map (kbd "t") 'treemacs)
   ;; `s-p 0` -> Jump focus to the Treemacs window
   (define-key my-jump-map (kbd "0") 'treemacs-select-window)
   ;; `s-p a` -> Add current project to Treemacs and show it
-  (define-key my-jump-map (kbd "d") 'treemacs-add-and-display-current-project-exclusively))
+  (define-key my-jump-map (kbd "t") 'treemacs-display-current-project-exclusively))
 
 ;; 5. Add our vterm toggle to the map as well.
 (with-eval-after-load 'vterm-toggle

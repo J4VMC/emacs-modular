@@ -577,6 +577,12 @@
 (use-package terraform-mode
   :ensure t) ; Provides major mode for `.tf` files
 
+;;; ----------------------------------------------------------------------
+;;; .env files
+;;; ----------------------------------------------------------------------
+
+(use-package supreme-dotenv
+  :ensure (:host github :repo "J4VMC/supreme-dotenv"))
 
 ;;; ----------------------------------------------------------------------
 ;;; Finalize

@@ -153,13 +153,13 @@
   (setq vterm-toggle-cd-auto-create-buffer nil)
 
   ;; When hiding the vterm, reset the window configuration.
-  (setq vterm-toggle-reset-window-configration-after-exit t)
+  (setq vterm-toggle-reset-window-configuration-after-exit t)
 
   ;; Don't open the vterm in fullscreen.
   (setq vterm-toggle-fullscreen-p nil)
 
   ;; How to hide the window.
-  (setq vterm-toggle-hide-method 'reset-window)
+  (setq vterm-toggle-hide-method 'delete-window)
 
   ;; --- Vterm Window Display Rules ---
   ;; This is a complex Elisp rule that tells Emacs *how* to

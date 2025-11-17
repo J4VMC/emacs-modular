@@ -23,7 +23,8 @@ straight
 list-packages
 custom.el
 .DS_STORE
-**/\#*.el\#
+**/\#*\#
 .dap-breakpoints
 .lsp-session
 *~
+forge-database.sqlite

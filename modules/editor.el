@@ -105,22 +105,6 @@
          (text-mode . hl-line-mode)
          (markdown-mode . hl-line-mode)))
 
-;; --- Automatic Pair Insertion ---
-;;
-;; The `smartparens` block below is commented out. The active
-;; configuration is `elec-pair`, which is the modern, built-in
-;; Emacs (28+) way to automatically insert closing pairs.
-
-;;(use-package smartparens
-;;  :ensure t
-;;  :hook ((prog-mode . smartparens-mode)
-;;         (text-mode . smartparens-mode)
-;;         (markdown-mode . smartparens-mode))
-;;  :config
-;;  ;; The require line needs to be wrapped
-;;  (with-eval-after-load 'org
-;;    (require 'smartparens-config)))
-
 ;; This is the built-in "electric-pair" mode.
 (use-package elec-pair
   :config
@@ -144,6 +128,13 @@
 ;; This overrides the default, which also includes `()`, `[]`, etc.
 ;; This is a very minimal and specific choice.
 (setq electric-pair-pairs '((?\{ . ?\})))
+
+;; Light-weight yet powerful package for manual manipulation of brackets
+;; and related characters.
+(use-package supreme-brackets
+  :ensure (:host github :repo "J4VMC/supreme-brackets")
+  :config
+  (supreme-brackets-setup-extended-keybindings))
 
 ;; Highlight special words like "TODO", "FIXME", and "NOTE" in comments.
 (use-package hl-todo
@@ -270,8 +261,8 @@
   (defun my/auto-cancel-ctrlf ()
     "Automatically cancel CTRLF search when leaving the minibUffer."
     (when (and (bound-and-true-p ctrlf--active-p)
-               (not (minibufferp))
-               (not (eq (current-buffer) ctrlf--minibuffer)))
+	       (not (minibufferp))
+	       (not (eq (current-buffer) ctrlf--minibuffer)))
       (ctrlf-cancel)))
 
   (add-hook 'post-command-hook #'my/auto-cancel-ctrlf)
