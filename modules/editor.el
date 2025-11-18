@@ -123,7 +123,7 @@
   (electric-pair-mode t))
 
 ;; This setting adds {} to the pairs list.
-;; Note: This ADDS to the default syntax table pairs (like () and []), 
+;; Note: This ADDS to the default syntax table pairs (like () and []),
 ;; it usually doesn't remove them unless you mess with syntax tables.
 (setq electric-pair-pairs '((?\{ . ?\})))
 
@@ -210,7 +210,7 @@
   ;; 1. PASSIVE GUIDES
   ;; "Even" faces faces are just 5% lighter than the background..
   (highlight-indent-guides-even-face ((t (:background "#262727"))))
-  ;; "Odd" faces are just 10% lighter than the background. 
+  ;; "Odd" faces are just 10% lighter than the background.
   ;; This creates a subtle "glassy" strip effect.
   (highlight-indent-guides-odd-face  ((t (:background "#32302f")))) 
 
