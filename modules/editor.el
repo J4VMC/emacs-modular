@@ -39,10 +39,6 @@
 ;; just like they do in every other application.
 (cua-mode 1)
 
-;; This is not a standard Emacs variable. Its effect is likely
-;; specific to a custom setup or a typo.
-(setq message-kill-buffer-on-exit t)
-
 ;; --- Auto-revert Mode ---
 ;; Automatically reload any file that has been changed on disk
 ;; (e.g., by an external program like `git checkout`).
@@ -108,25 +104,27 @@
 ;; This is the built-in "electric-pair" mode.
 (use-package elec-pair
   :config
-  ;; Define a custom function to disable auto-pairing in the minibuffer.
-  ;; We don't want `C-x C-f` to auto-pair parens in the file path.
-  (defun my/inhibit-electric-pair-mode (char)
-    (or (minibufferp) (electric-pair-conservative-inhibit char)))
-  (setq electric-pair-inhibit-predicate
-        #'my/inhibit-electric-pair-mode)
-  ;; Turn on the mode globally.
-  (electric-pair-mode t)
+  ;; Combine both rules into one predicate function
+  (defun my/electric-pair-inhibit-predicate (char)
+    (or
+     ;; 1. Stop pairing in the minibuffer
+     (minibufferp)
+     
+     ;; 2. Stop pairing for <, >, and ~ (HTML/XML preference)
+     (member char '(?< ?> ?~))
+     
+     ;; 3. Default conservative behavior for other things
+     (electric-pair-conservative-inhibit char)))
 
-  ;; This is a custom rule: it prevents auto-pairing for `<` and `>`
-  ;; (which can be annoying in HTML/XML) and `~`.
-  (setq electric-pair-inhibit-predicate
-        (lambda (c)
-          (or (member c '(?< ?> ?~))
-              (electric-pair-default-inhibit c)))))
+  ;; Set the predicate ONCE
+  (setq electric-pair-inhibit-predicate #'my/electric-pair-inhibit-predicate)
 
-;; This explicitly *limits* the auto-pairing to just curly braces `{}`.
-;; This overrides the default, which also includes `()`, `[]`, etc.
-;; This is a very minimal and specific choice.
+  ;; Turn on the mode globally
+  (electric-pair-mode t))
+
+;; This setting adds {} to the pairs list.
+;; Note: This ADDS to the default syntax table pairs (like () and []), 
+;; it usually doesn't remove them unless you mess with syntax tables.
 (setq electric-pair-pairs '((?\{ . ?\})))
 
 ;; Light-weight yet powerful package for manual manipulation of brackets
@@ -202,7 +200,25 @@
 ;; This helps line up code blocks in Python, YAML, etc.
 (use-package highlight-indent-guides
   :ensure t
-  :hook (prog-mode . highlight-indent-guides-mode))
+  :hook (prog-mode . highlight-indent-guides-mode)
+  :custom
+  (highlight-indent-guides-method 'fill)
+  (highlight-indent-guides-responsive 'top)
+  (highlight-indent-guides-auto-enabled nil) ;; Disable auto to manually control "transparency"
+
+  :custom-face
+  ;; 1. PASSIVE GUIDES
+  ;; "Even" faces faces are just 5% lighter than the background..
+  (highlight-indent-guides-even-face ((t (:background "#262727"))))
+  ;; "Odd" faces are just 10% lighter than the background. 
+  ;; This creates a subtle "glassy" strip effect.
+  (highlight-indent-guides-odd-face  ((t (:background "#32302f")))) 
+
+  ;; 2. ACTIVE GUIDES (Where your cursor is)
+  ;; Instead of bright orange (#d65d0e), we use a dark muddy brown/orange.
+  ;; This looks like orange with 20% opacity over a black background.
+  (highlight-indent-guides-top-even-face ((t (:background "#45352b"))))
+  (highlight-indent-guides-top-odd-face  ((t (:background "#2f232b")))))
 
 ;; Enable moving lines and regions up and down with `M-up` and `M-down`.
 (use-package drag-stuff
@@ -259,7 +275,7 @@
   ;; A helper function to automatically *cancel* the search
   ;; if you click or move your cursor outside the minibuffer.
   (defun my/auto-cancel-ctrlf ()
-    "Automatically cancel CTRLF search when leaving the minibUffer."
+    "Automatically cancel CTRLF search when leaving the minibuffer."
     (when (and (bound-and-true-p ctrlf--active-p)
 	       (not (minibufferp))
 	       (not (eq (current-buffer) ctrlf--minibuffer)))
