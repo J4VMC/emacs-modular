@@ -216,7 +216,7 @@
   (highlight-indent-guides-odd-face  ((t (:background "#313244"))))
 
   ;; 2. ACTIVE GUIDES (Where your cursor is)
-  ;; Instead of bright orange (#d65d0e), we use a dark muddy brown/orange.
+  ;; Instead of peach (#fab387), we use a dark muddy brown/orange.
   ;; This looks like orange with 20% opacity over a black background.
   (highlight-indent-guides-top-even-face ((t (:background "#453333"))))
   (highlight-indent-guides-top-odd-face  ((t (:background "#362e4a")))))
