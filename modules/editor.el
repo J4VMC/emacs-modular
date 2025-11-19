@@ -209,16 +209,17 @@
   :custom-face
   ;; 1. PASSIVE GUIDES
   ;; "Even" faces faces are just 5% lighter than the background..
-  (highlight-indent-guides-even-face ((t (:background "#262727"))))
+  (highlight-indent-guides-even-face ((t (:background "#252533"))))
+  
   ;; "Odd" faces are just 10% lighter than the background.
   ;; This creates a subtle "glassy" strip effect.
-  (highlight-indent-guides-odd-face  ((t (:background "#32302f")))) 
+  (highlight-indent-guides-odd-face  ((t (:background "#313244"))))
 
   ;; 2. ACTIVE GUIDES (Where your cursor is)
   ;; Instead of bright orange (#d65d0e), we use a dark muddy brown/orange.
   ;; This looks like orange with 20% opacity over a black background.
-  (highlight-indent-guides-top-even-face ((t (:background "#45352b"))))
-  (highlight-indent-guides-top-odd-face  ((t (:background "#2f232b")))))
+  (highlight-indent-guides-top-even-face ((t (:background "#453333"))))
+  (highlight-indent-guides-top-odd-face  ((t (:background "#362e4a")))))
 
 ;; Enable moving lines and regions up and down with `M-up` and `M-down`.
 (use-package drag-stuff
