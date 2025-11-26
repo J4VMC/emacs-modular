@@ -282,66 +282,64 @@
             (setq gc-cons-threshold (* 32 1024 1024))))
 
 ;;; ----------------------------------------------------------------------
-;;; Automatic Daily Elpaca Update
+;;; Automatic Daily Elpaca Update (File-Based Persistence)
 ;;; ----------------------------------------------------------------------
 ;;
-;; This section defines a set of functions to automatically update
-;; your packages once per day, silently in the background.
+;; This runs `elpaca-update-all` automatically once per day in the background.
+;; It stores the last update date in a file named "elpaca-last-update.txt"
+;; inside your user-emacs-directory.
 
-;; Use `defcustom` here so the variable is registered with the
-;; customize system and will be reliably saved in `custom.el`.
-(defcustom my/last-elpaca-update-date nil
-  "The date of the last automatic Elpaca package upgrade (YYYY-MM-DD)."
-  :type '(choice (const nil) string)  ; Fixed: Allow nil or string
-  :group 'convenience)
+(defvar my/elpaca-timestamp-file
+  (expand-file-name "elpaca-last-update.txt" user-emacs-directory)
+  "File path to store the date of the last Elpaca update.")
 
-;; This is a "safe" function to run the update.
+(defun my/read-last-update-date ()
+  "Read the date string from the timestamp file. Returns nil if file is missing or unreadable."
+  ;; Wraps file access in condition-case to return nil on I/O errors.
+  (condition-case nil
+      (when (file-exists-p my/elpaca-timestamp-file)
+        (with-temp-buffer
+          (insert-file-contents my/elpaca-timestamp-file)
+          (string-trim (buffer-string))))
+    (error nil)))
+
+(defun my/save-current-update-date ()
+  "Write today's date to the timestamp file."
+  (with-temp-buffer
+    (insert (format-time-string "%Y-%m-%d"))
+    ;; Write silently (no message in echo area)
+    (write-region (point-min) (point-max) my/elpaca-timestamp-file nil 'silent)))
+
 (defun my/elpaca-auto-update ()
-  "Run `elpaca-update-all` safely and silently.
-Logs progress to *Messages* without requiring user interaction."
+  "Run `elpaca-update-all` safely and silently."
   (message "Checking for package updates...")
-  ;; We still use `let` to set `elpaca-log-functions` to nil,
-  ;; which prevents the *Elpaca Log* buffer from popping up.
-  ;; We *remove* `inhibit-message` so we can see success or failure.
   (let ((elpaca-log-functions nil))
-    ;; Use 'condition-case' (try...catch) to handle errors.
     (condition-case err
-        ;; --- Try ---
         (progn
-          (elpaca-update-all) ;; Run the update
-          (message "Packages updated successfully on %s."
-                   (format-time-string "%Y-%m-%d %H:%M")))
-      ;; --- Catch ---
+          (elpaca-update-all)
+          (message "Packages updated successfully."))
       (error
-       ;; If an error happens, log it to *Messages* instead of crashing.
        (message "Automatic daily package update failed — %s" (error-message-string err))))))
 
-;; This function checks if an update is needed.
 (defun my/run-daily-elpaca-update-if-needed ()
-  "Check today's date and run `my/elpaca-auto-update` if not already run."
-  (let ((current-date (format-time-string "%Y-%m-%d")))
-    ;; If the last update date is *not* today...
-    (unless (equal my/last-elpaca-update-date current-date)
-      (message "Running daily package update in the background!")
-      ;; ...run the safe update function.
-      (my/elpaca-auto-update)
-      ;; ...update the variable to today's date.
-      (setq my/last-elpaca-update-date current-date)
-      ;; ...and save this new date to 'custom.el' so we remember it
-      ;; next time Emacs starts.
-      (customize-save-variable
-       'my/last-elpaca-update-date my/last-elpaca-update-date)
-      (message "Package update finished!")))
-  (message "All packages are up to date!"))
+  "Check today's date against the saved file and run update if needed."
+  (let ((current-date (format-time-string "%Y-%m-%d"))
+        (last-update-date (my/read-last-update-date)))
 
-;; Finally, schedule the check to run *after* Elpaca initializes.
-;; Changed from 'emacs-startup-hook' to 'elpaca-after-init-hook'
-;; to ensure Elpaca is fully ready before attempting updates.
+    (if (string= current-date last-update-date)
+        ;; If dates match, do nothing (or log a quiet message)
+        (message "Skipping Elpaca update (already updated today: %s)" last-update-date)
+
+      ;; If dates don't match (or file is missing/nil), update!
+      (message "Running daily package update in the background...")
+      (my/elpaca-auto-update)
+      
+      ;; Save the new date to the file immediately
+      (my/save-current-update-date))))
+
+;; Schedule the check to run 30 seconds after Elpaca initializes
 (add-hook 'elpaca-after-init-hook
           (lambda ()
-            ;; Don't run this *immediately* at startup; that would slow
-            ;; it down. Instead, wait for Emacs to be idle for 30
-            ;; seconds, *then* run the check. This is polite and safe.
             (run-with-idle-timer 30 nil #'my/run-daily-elpaca-update-if-needed)))
 
 ;;; init.el ends here
